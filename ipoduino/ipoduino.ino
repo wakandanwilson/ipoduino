@@ -5,24 +5,45 @@
 const int rxPin = 2; 
 const int txPin = 3;
 
-//creates player object
+//creates DFRobotDFPlayerMini instance called player
 DFRobotDFPlayerMini player;
 
 void setup(){
-  //creates SoftwareSerial object called mySerial
-  SoftwareSerial mySerial(rxPin, txPin); 
+
+  //creates SoftwareSerial object
+  SoftwareSerial softwareSerial(rxPin, txPin); 
 
   //baud rate for laptop-arduino
   Serial.begin(9600);
   //baud rate for RX-TX pins
   softwareSerial.begin(9600);
   
+  //return true if connection was success, false if not
+  if (!player.begin(softwareSerial)){
+    Serial.println('Connecting to DFPlayer Mini failed!');
+  }
+
+  player.volume(30);
+  player.play(1);
+  delay(5000);
+  player.pause();
+  delay(2000);
+  player.start();
+
+  //debugging
+  //prints number of files on microSD
+  Serial.println(player.readFileCounts());
+  //prints current file number
+  Serial.println(player.readCurrentFileNumber());
+
 }
+
 void loop(){
 
-  //checks if there's any data to read
-  if (Serial.available() > 0){
-    byte incomingByte = Serial.read();
-    Serial.write(incomingByte);
-  }
+  //delay the next command by 5 seconds
+  delay(5000);
+
+  //skip to next song
+  player.next();
+
 }
